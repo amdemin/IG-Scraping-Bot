@@ -56,21 +56,27 @@ def job():
     time.sleep(rd.uniform(6,8))
     print("Submit button's been clicked")
 
+    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    wd.set_window_size(S('Width'), S('Height'))
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    print("Screenshot has been processed")
+
+    print(image_code)
+    print('')
+    print('')
+
+
     # wd.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password)
     #time.sleep(rd.uniform(0.95,1.45))
     # wd.find_element_by_xpath('//button[@type="submit"]').click()
 
 
-    wd.get('https://www.instagram.com/accounts/edit/')
-    time.sleep(rd.uniform(2.5,3.5))
+    #wd.get('https://www.instagram.com/accounts/edit/')
+    #time.sleep(rd.uniform(2.5,3.5))
 
-    print("The webpage 'https://www.instagram.com/accounts/edit/' has been opened")
+    # print("The webpage 'https://www.instagram.com/accounts/edit/' has been opened")
 
-    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    wd.set_window_size(S('Width'), S('Height'))
-    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    print("Screenshot has been processed")
-    print(image_code)
+    # print(image_code)
     print('')
     print('')
 
