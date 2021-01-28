@@ -111,9 +111,29 @@ def job():
     print("Screenshot 4 has been processed")
     time.sleep(rd.uniform(1.5,2.5))
     
-    print("SUCCESS")
+    print("Successfully opened a first story")
+
+    # the maximum amount of stories will be 100
+    start = time.time()
+    count = 0
+    for _ in range(100):
+      try:
+          time.sleep(rd.uniform(1.8,2.4))
+          # wd.find_element_by_class_name('coreSpriteRightChevron').click()
+          WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "coreSpriteRightChevron"))).click()
+          count += 1
+      except Exception as e:
+          time.sleep(rd.uniform(1.8,2.4))
+          print(e)
+          break
+
+    end = time.time() - start
+    print("Total watching time: " + str(end // 60) + " m " + str(round(end % 60, 2)) + " s ")
+    print("Number of stories viewed: " + str(count))
+    time.sleep(rd.uniform(1.8,2.4))
 
     wd.quit()
+
   except Exception as e:
     print(e)
 
