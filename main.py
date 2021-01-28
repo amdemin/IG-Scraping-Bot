@@ -5,12 +5,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import random as rd
+import dropbox
+import datetime
+import base64
 import os
 import schedule
 
 
 def job():
   try:
+
+    dbx_token = os.environ.get("dbx_token")
+    dbx = dropbox.Dropbox(dbx_token)
 
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
 
@@ -52,6 +58,15 @@ def job():
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='password']"))).send_keys(password)
     print("Password entered")
     time.sleep(rd.uniform(0.95,1.45))
+
+    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    wd.set_window_size(S('Width'), S('Height'))
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_input" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    print("Screenshot 1 has been processed")
+    time.sleep(rd.uniform(4.5,5.5))
+
+
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]'))).click()
     time.sleep(rd.uniform(6,8))
     print("Submit button's been clicked")
@@ -59,43 +74,35 @@ def job():
     S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    print("Screenshot has been processed")
-
-    print(image_code)
-    print('')
-    print('')
-
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    print("Screenshot 2 has been processed")
+    time.sleep(rd.uniform(4.5,5.5))
 
     # wd.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password)
     #time.sleep(rd.uniform(0.95,1.45))
     # wd.find_element_by_xpath('//button[@type="submit"]').click()
 
+    wd.get('https://www.instagram.com/')
+    time.sleep(rd.uniform(4.5,5.5))
+    print("The webpage 'https://www.instagram.com/' has been opened")
 
-    #wd.get('https://www.instagram.com/accounts/edit/')
-    #time.sleep(rd.uniform(2.5,3.5))
-
-    # print("The webpage 'https://www.instagram.com/accounts/edit/' has been opened")
-
-    # print(image_code)
-    print('')
-    print('')
-
-    # wd.maximize_window()
-    # a = wd.get_screenshot_as_base64()
-    print("")
-    # print(a)
-    print("")
-    time.sleep(50)
+    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    wd.set_window_size(S('Width'), S('Height'))
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    print("Screenshot 3 has been processed")
 
     time.sleep(rd.uniform(2.5,3.5))
     
-    # encode_image = wd.get_screenshot_as_base64()
-    print("")
-    # print(encode_image)
-    print("")
-    
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div/div/div[3]/button[2]"))).click()
     # wd.find_element_by_xpath("//button[contains(text(), 'Не сейчас')]").click()
+
+    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    wd.set_window_size(S('Width'), S('Height'))
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_not_now" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    print("Screenshot 4 has been processed")
+    
     print("The 'Not Now' button has been clicked")
     time.sleep(rd.uniform(2.5,3.5))
     wd.find_element_by_class_name('Ckrof').click()
