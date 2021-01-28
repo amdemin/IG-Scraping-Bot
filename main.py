@@ -49,12 +49,16 @@ def job():
     # wd.find_element_by_xpath("//input[@name=\"username\"]").send_keys(username)
     time.sleep(rd.uniform(0.95,1.45))
     # wd.find_element_by_name('password').send_keys(password + Keys.ENTER)
-    WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='password']"))).send_keys(password + Keys.ENTER)
+    WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='password']"))).send_keys(password)
     print("Password entered")
+    time.sleep(rd.uniform(0.95,1.45))
+    WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]'))).click()
+    time.sleep(rd.uniform(6,8))
+    print("Submit button's been clicked")
+
     # wd.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password)
     #time.sleep(rd.uniform(0.95,1.45))
     # wd.find_element_by_xpath('//button[@type="submit"]').click()
-    time.sleep(rd.uniform(6,8))
 
 
     wd.get('https://www.instagram.com/accounts/edit/')
