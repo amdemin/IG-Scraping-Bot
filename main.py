@@ -62,7 +62,7 @@ def job():
     S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_input" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_before_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot 1 has been processed")
     time.sleep(rd.uniform(4.5,5.5))
 
@@ -78,12 +78,13 @@ def job():
     print("Screenshot 2 has been processed")
     time.sleep(rd.uniform(4.5,5.5))
 
-    # wd.find_element_by_xpath("//input[@name=\"password\"]").send_keys(password)
-    #time.sleep(rd.uniform(0.95,1.45))
-    # wd.find_element_by_xpath('//button[@type="submit"]').click()
+    # It does not require sms every time, after I manually wrote sms code, in the next iteration it's not required to write sms code again
+    # xpath for first button in sms verification /html/body/div[1]/section/div/div/div[3]/form/span/button
+    # xpath for entering digits from sms "//input[@name='security_code]"
+    # xpath for second button in sms verification /html/body/div[1]/section/div/div/div[2]/form/span/button
 
     wd.get('https://www.instagram.com/')
-    time.sleep(rd.uniform(4.5,5.5))
+    time.sleep(rd.uniform(15, 18))
     print("The webpage 'https://www.instagram.com/' has been opened")
 
     S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
@@ -91,22 +92,25 @@ def job():
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
     dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot 3 has been processed")
+    time.sleep(rd.uniform(1.5, 2.5))
 
-    time.sleep(rd.uniform(2.5,3.5))
     
-    WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div/div/div[3]/button[2]"))).click()
-    # wd.find_element_by_xpath("//button[contains(text(), 'Не сейчас')]").click()
+    # previous code wd.find_element_by_xpath("//button[contains(text(), 'Не сейчас')]").click()
+    # WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div/div/div[3]/button[2]"))).click()
+    # print("The 'Not Now' button has been clicked")
+    # time.sleep(rd.uniform(2.5,3.5))
+
+    # wd.find_element_by_class_name('Ckrof').click()
+    WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "Ckrof"))).click()
+    time.sleep(rd.uniform(4.5,5.5))
 
     S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_not_now" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_on_story" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot 4 has been processed")
-    
-    print("The 'Not Now' button has been clicked")
-    time.sleep(rd.uniform(2.5,3.5))
-    wd.find_element_by_class_name('Ckrof').click()
     time.sleep(rd.uniform(1.5,2.5))
+    
     print("SUCCESS")
 
     wd.quit()
