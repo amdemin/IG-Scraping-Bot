@@ -64,8 +64,11 @@ def job():
 
     S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
     wd.set_window_size(S('Width'), S('Height'))
-    wd.find_element_by_tag_name('body').screenshot("test.png")
-    print("Screenshot has been saved")
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    print("Screenshot has been processed")
+    print(image_code)
+    print('')
+    print('')
 
     # wd.maximize_window()
     # a = wd.get_screenshot_as_base64()
