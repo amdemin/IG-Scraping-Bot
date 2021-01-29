@@ -3,13 +3,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from twilio.rest import Client
+import os
 import time
-import random as rd
-import dropbox
 import datetime
 import base64
-import os
+import random as rd
 import schedule
+import dropbox
 
 
 def job():
@@ -88,6 +89,11 @@ def job():
         image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
         dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 1" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
         print("Screenshot SMS Verification 1 has been processed")
+
+        # send message to my phone number about necessary sms verification
+        twilio_msg = "Your Instagram Bot requires verification, please enter the code during 10 minutes!"
+        client = Client(os.environ.get("TWILIO_ACCOUNT_SID"), os.environ.get("TWILIO_AUTH_TOKEN"))
+        client.messages.create(to=os.environ.get("TWILIO_MY_PHONE"),from_=os.environ.get("TWILIO_FAKE_PHONE"),body=twilio_msg)
         
         time.sleep(rd.uniform(600, 650))
         # get code from name of file stored in Code dropbox folder
@@ -113,7 +119,7 @@ def job():
         print("Screenshot SMS Verification 3 has been processed")
 
     except Exception as e:
-      print(e)
+      print("Perhaps no sms required", e)
       pass
 
     # It does not require sms every time, after I manually wrote sms code, in the next iteration it's not required to write sms code again
@@ -174,6 +180,7 @@ def job():
 
   except Exception as e:
     print(e)
+    pass
 
 
 schedule.every(30).minutes.do(job)
