@@ -63,7 +63,7 @@ def job():
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
     dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_before_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot 1 has been processed")
+    print("Screenshot before login has been processed")
     time.sleep(rd.uniform(4.5,5.5))
 
 
@@ -75,8 +75,46 @@ def job():
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
     dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot 2 has been processed")
+    print("Screenshot after login has been processed")
     time.sleep(rd.uniform(4.5,5.5))
+
+
+    try:
+        WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Send Security Code')]"))).click()
+        time.sleep(rd.uniform(4.5,5.5))
+
+        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        wd.set_window_size(S('Width'), S('Height'))
+        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 1" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        print("Screenshot SMS Verification 1 has been processed")
+        
+        time.sleep(rd.uniform(600, 650))
+        # get code from name of file stored in Code dropbox folder
+        for entry in dbx.files_list_folder('/Code').entries:
+          code = entry.name.strip('.txt')
+        print(code)
+        WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='security_code']"))).send_keys(code)
+        time.sleep(rd.uniform(4.5,5.5))
+
+        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        wd.set_window_size(S('Width'), S('Height'))
+        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 2" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        print("Screenshot SMS Verification 2 has been processed")
+
+        WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))).click()
+
+        time.sleep(rd.uniform(4.5,5.5))
+        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        wd.set_window_size(S('Width'), S('Height'))
+        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS ending" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        print("Screenshot SMS Verification 3 has been processed")
+
+    except Exception as e:
+      print(e)
+      pass
 
     # It does not require sms every time, after I manually wrote sms code, in the next iteration it's not required to write sms code again
     # xpath for first button in sms verification /html/body/div[1]/section/div/div/div[3]/form/span/button
@@ -91,7 +129,7 @@ def job():
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
     dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot 3 has been processed")
+    print("Screenshot of Main Page has been processed")
     time.sleep(rd.uniform(1.5, 2.5))
 
     
@@ -108,7 +146,7 @@ def job():
     wd.set_window_size(S('Width'), S('Height'))
     image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
     dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_on_story" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot 4 has been processed")
+    print("Screenshot of First Story has been processed")
     time.sleep(rd.uniform(1.5,2.5))
     
     print("Successfully opened a first story")
@@ -124,7 +162,7 @@ def job():
           count += 1
       except Exception as e:
           time.sleep(rd.uniform(1.8,2.4))
-          print(e)
+          print("CoreSpriteRightChevron is not found, perhaps stories are left", e)
           break
 
     end = time.time() - start
@@ -138,7 +176,8 @@ def job():
     print(e)
 
 
-schedule.every(5).minutes.do(job)
+schedule.every(30).minutes.do(job)
+# schedule.every(2).hours.do(job)
 
 
 while True:
