@@ -118,6 +118,7 @@ def verify_sms(wd):
   except Exception as e:
     if sms_verification is False:
       print("SMS verification is not needed")
+      return wd
     else:
       print("Something goes wrong with SMS verification", e)
     return None
@@ -175,7 +176,7 @@ def watch_story(wd):
     print("Total number of stories:", count)
     print("The number of stories per account:", stories_dict)
     time.sleep(rd.uniform(2.5,3.5))
-    return None
+    return wd
   except Exception as e:
     print("Something goes wrong with watching stories", e)
     return None
@@ -186,7 +187,7 @@ def job(CHROMEDRIVER_PATH, options, username, password):
 
     wd = authorise(wd)
     wd = verify_sms(wd)
-    watch_story(wd)
+    wd = watch_story(wd)
 
     wd.quit()
   except Exception as e:
