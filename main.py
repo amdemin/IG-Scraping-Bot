@@ -147,18 +147,17 @@ def job(CHROMEDRIVER_PATH, options, username, password):
 
     make_screen(wd=wd, name="Story Page")
     print("Screenshot of the first story has been made")
-    time.sleep(rd.uniform(1.5,2.5))
-
+    time.sleep(rd.uniform(0.8,1.2))
 
     start = time.time()
     for count in range(150):
       try:
-          time.sleep(rd.uniform(1.8,2.4))
+          time.sleep(rd.uniform(1,1.2))
           WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "coreSpriteRightChevron"))).click()
           # count the current story
+          time.sleep(rd.uniform(0.8,1.2))
           stories_dict = count_story(wd=wd, stories_dict=stories_dict)
       except Exception as e:
-          time.sleep(rd.uniform(1.8,2.4))
           print("CoreSpriteRightChevron is not found, perhaps stories are left", e)
           break
 
