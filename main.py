@@ -13,40 +13,47 @@ import schedule
 import dropbox
 
 
-def job():
+dbx_token = os.environ.get("dbx_token")
+dbx = dropbox.Dropbox(dbx_token)
+
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
+options = webdriver.ChromeOptions()
+options.headless = True
+options.add_argument(f'user-agent={user_agent}')
+options.add_argument("--window-size=1920,1080")
+options.add_argument('--ignore-certificate-errors')
+options.add_argument('--allow-running-insecure-content')
+options.add_argument("--disable-extensions")
+options.add_argument("--proxy-server='direct://'")
+options.add_argument("--proxy-bypass-list=*")
+options.add_argument("--start-maximized")
+options.add_argument('--disable-gpu')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--no-sandbox')
+options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+CHROMEDRIVER_PATH = os.environ.get("CHROMEDRIVER_PATH")
+
+username = os.environ.get("INSTAGRAM_USER")
+password = os.environ.get("INSTAGRAM_PASSWORD")
+
+
+def make_screen(wd, name):
   try:
+    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    wd.set_window_size(S('Width'), S('Height'))
+    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + name + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    return None
+  except Exception as e:
+    print("Some error's been occurred with screenshot", e)
+    return None
 
-    dbx_token = os.environ.get("dbx_token")
-    dbx = dropbox.Dropbox(dbx_token)
-
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
-
-    options = webdriver.ChromeOptions()
-    options.headless = True
-    options.add_argument(f'user-agent={user_agent}')
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--allow-running-insecure-content')
-    options.add_argument("--disable-extensions")
-    options.add_argument("--proxy-server='direct://'")
-    options.add_argument("--proxy-bypass-list=*")
-    options.add_argument("--start-maximized")
-    options.add_argument('--disable-gpu')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--no-sandbox')
-    options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-
-    CHROMEDRIVER_PATH = os.environ.get("CHROMEDRIVER_PATH")
+def job(CHROMEDRIVER_PATH, options, username, password):
+  try:
     wd = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH,chrome_options=options)
     
-    #wd.get("https://www.google.com")
-    #print(wd.page_source)
-    
     wd.get('https://instagram.com')
-    time.sleep(rd.uniform(9,11))
-
-    username = os.environ.get("INSTAGRAM_USER")
-    password = os.environ.get("INSTAGRAM_PASSWORD")
+    time.sleep(rd.uniform(8, 10))
 
     time.sleep(rd.uniform(2.5,3.5))
     # wd.find_element_by_name('username').send_keys(username)
@@ -60,10 +67,11 @@ def job():
     print("Password entered")
     time.sleep(rd.uniform(0.95,1.45))
 
-    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    wd.set_window_size(S('Width'), S('Height'))
-    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_before_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    make_screen(wd=wd, name="page before login")
+    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    # wd.set_window_size(S('Width'), S('Height'))
+    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_before_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot before login has been processed")
     time.sleep(rd.uniform(4.5,5.5))
 
@@ -72,10 +80,11 @@ def job():
     time.sleep(rd.uniform(6,8))
     print("Submit button's been clicked")
 
-    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    wd.set_window_size(S('Width'), S('Height'))
-    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    make_screen(wd=wd, name="page after login")
+    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    # wd.set_window_size(S('Width'), S('Height'))
+    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot after login has been processed")
     time.sleep(rd.uniform(4.5,5.5))
 
@@ -84,10 +93,11 @@ def job():
         WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Send Security Code')]"))).click()
         time.sleep(rd.uniform(4.5,5.5))
 
-        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        wd.set_window_size(S('Width'), S('Height'))
-        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 1" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        make_screen(wd=wd, name="SMS step 1")
+        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        # wd.set_window_size(S('Width'), S('Height'))
+        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 1" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
         print("Screenshot SMS Verification 1 has been processed")
 
         # send message to my phone number about necessary sms verification
@@ -95,7 +105,8 @@ def job():
         client = Client(os.environ.get("TWILIO_ACCOUNT_SID"), os.environ.get("TWILIO_AUTH_TOKEN"))
         client.messages.create(to=os.environ.get("TWILIO_MY_PHONE"),from_=os.environ.get("TWILIO_FAKE_PHONE"),body=twilio_msg)
         
-        time.sleep(rd.uniform(600, 650))
+        # time.sleep(rd.uniform(600, 650))
+        time.sleep(rd.uniform(180, 240))
         # get code from name of file stored in Code dropbox folder
         for entry in dbx.files_list_folder('/Code').entries:
           code = entry.name.strip('.txt')
@@ -103,19 +114,21 @@ def job():
         WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='security_code']"))).send_keys(code)
         time.sleep(rd.uniform(4.5,5.5))
 
-        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        wd.set_window_size(S('Width'), S('Height'))
-        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 2" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        make_screen(wd=wd, name="SMS step 2")
+        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        # wd.set_window_size(S('Width'), S('Height'))
+        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 2" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
         print("Screenshot SMS Verification 2 has been processed")
 
         WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))).click()
 
         time.sleep(rd.uniform(4.5,5.5))
-        S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        wd.set_window_size(S('Width'), S('Height'))
-        image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS ending" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+        make_screen(wd=wd, name="SMS step 3")
+        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+        # wd.set_window_size(S('Width'), S('Height'))
+        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS ending" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
         print("Screenshot SMS Verification 3 has been processed")
 
     except Exception as e:
@@ -131,10 +144,11 @@ def job():
     time.sleep(rd.uniform(15, 18))
     print("The webpage 'https://www.instagram.com/' has been opened")
 
-    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    wd.set_window_size(S('Width'), S('Height'))
-    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    make_screen(wd=wd, name="Main page")
+    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    # wd.set_window_size(S('Width'), S('Height'))
+    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot of Main Page has been processed")
     time.sleep(rd.uniform(1.5, 2.5))
 
@@ -148,10 +162,11 @@ def job():
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "Ckrof"))).click()
     time.sleep(rd.uniform(4.5,5.5))
 
-    S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    wd.set_window_size(S('Width'), S('Height'))
-    image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_on_story" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
+    make_screen(wd=wd, name="Story Page")
+    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
+    # wd.set_window_size(S('Width'), S('Height'))
+    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
+    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_on_story" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
     print("Screenshot of First Story has been processed")
     time.sleep(rd.uniform(1.5,2.5))
     
@@ -183,7 +198,8 @@ def job():
     pass
 
 
-schedule.every(30).minutes.do(job)
+# Schedule method will start to count each time after function's finished, it will not count time for the function execution
+schedule.every(5).minutes.do(job, CHROMEDRIVER_PATH=CHROMEDRIVER_PATH, options=options, username=username, password=password)
 # schedule.every(2).hours.do(job)
 
 
