@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from twilio.rest import Client
+from collections import Counter
 import os
 import time
 import datetime
@@ -48,6 +49,15 @@ def make_screen(wd, name):
     print("Some error's been occurred with screenshot", e)
     return None
 
+def count_story(wd, stories_dict):
+  try:
+    story_account = WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "FPmhX")))
+    stories_dict[story_account.text] += 1
+    return stories_dict
+  except Exception as e:
+    print("Some error's been occurred with counting story", e)
+    return None
+
 def job(CHROMEDRIVER_PATH, options, username, password):
   try:
     wd = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH,chrome_options=options)
@@ -68,24 +78,15 @@ def job(CHROMEDRIVER_PATH, options, username, password):
     time.sleep(rd.uniform(0.95,1.45))
 
     make_screen(wd=wd, name="page before login")
-    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    # wd.set_window_size(S('Width'), S('Height'))
-    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_before_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot before login has been processed")
+    print("Screenshot before login has been made")
     time.sleep(rd.uniform(4.5,5.5))
-
 
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, '//button[@type="submit"]'))).click()
     time.sleep(rd.uniform(6,8))
     print("Submit button's been clicked")
 
     make_screen(wd=wd, name="page after login")
-    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    # wd.set_window_size(S('Width'), S('Height'))
-    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_login" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot after login has been processed")
+    print("Screenshot after login has been made")
     time.sleep(rd.uniform(4.5,5.5))
 
 
@@ -94,11 +95,7 @@ def job(CHROMEDRIVER_PATH, options, username, password):
         time.sleep(rd.uniform(4.5,5.5))
 
         make_screen(wd=wd, name="SMS step 1")
-        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        # wd.set_window_size(S('Width'), S('Height'))
-        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 1" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-        print("Screenshot SMS Verification 1 has been processed")
+        print("Screenshot SMS Verification 1 has been made")
 
         # send message to my phone number about necessary sms verification
         twilio_msg = "Your Instagram Bot requires verification, please enter the code during 10 minutes!"
@@ -110,25 +107,17 @@ def job(CHROMEDRIVER_PATH, options, username, password):
         # get code from name of file stored in Code dropbox folder
         for entry in dbx.files_list_folder('/Code').entries:
           code = entry.name.strip('.txt')
-        print(code)
+        print("The SMS code is:", code)
         WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//input[@name='security_code']"))).send_keys(code)
         time.sleep(rd.uniform(4.5,5.5))
 
         make_screen(wd=wd, name="SMS step 2")
-        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        # wd.set_window_size(S('Width'), S('Height'))
-        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS step 2" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-        print("Screenshot SMS Verification 2 has been processed")
+        print("Screenshot SMS Verification 2 has been made")
 
         WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))).click()
-
         time.sleep(rd.uniform(4.5,5.5))
+
         make_screen(wd=wd, name="SMS step 3")
-        # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-        # wd.set_window_size(S('Width'), S('Height'))
-        # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-        # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "SMS ending" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
         print("Screenshot SMS Verification 3 has been processed")
 
     except Exception as e:
@@ -141,62 +130,47 @@ def job(CHROMEDRIVER_PATH, options, username, password):
     # xpath for second button in sms verification /html/body/div[1]/section/div/div/div[2]/form/span/button
 
     wd.get('https://www.instagram.com/')
-    time.sleep(rd.uniform(15, 18))
+    time.sleep(rd.uniform(8, 10))
     print("The webpage 'https://www.instagram.com/' has been opened")
 
     make_screen(wd=wd, name="Main page")
-    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    # wd.set_window_size(S('Width'), S('Height'))
-    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "main_page" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot of Main Page has been processed")
+    print("Screenshot of Main Page has been made")
     time.sleep(rd.uniform(1.5, 2.5))
 
-    
-    # previous code wd.find_element_by_xpath("//button[contains(text(), 'Не сейчас')]").click()
-    # WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div/div/div/div[3]/button[2]"))).click()
-    # print("The 'Not Now' button has been clicked")
-    # time.sleep(rd.uniform(2.5,3.5))
+    # the maximum amount of stories will be 150
+    stories_dict = Counter()
 
-    # wd.find_element_by_class_name('Ckrof').click()
     WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "Ckrof"))).click()
-    time.sleep(rd.uniform(4.5,5.5))
+    time.sleep(rd.uniform(2.5,3.5))
+    # count the first story
+    stories_dict = count_story(wd=wd, stories_dict=stories_dict)
 
     make_screen(wd=wd, name="Story Page")
-    # S = lambda X: wd.execute_script('return document.body.parentNode.scroll' + X)
-    # wd.set_window_size(S('Width'), S('Height'))
-    # image_code = wd.find_element_by_tag_name('body').screenshot_as_base64
-    # dbx.files_upload(base64.decodebytes(image_code.encode()), "/TEXT/" + "page_after_clicking_on_story" + datetime.datetime.today().strftime("_%d.%m.%Y_%H:%M:%S") + ".png", mute = True)
-    print("Screenshot of First Story has been processed")
+    print("Screenshot of the first story has been made")
     time.sleep(rd.uniform(1.5,2.5))
-    
-    print("Successfully opened a first story")
 
-    # the maximum amount of stories will be 100
+
     start = time.time()
-    count = 0
-    for _ in range(100):
+    for count in range(150):
       try:
           time.sleep(rd.uniform(1.8,2.4))
-          # wd.find_element_by_class_name('coreSpriteRightChevron').click()
           WebDriverWait(wd, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "coreSpriteRightChevron"))).click()
-          count += 1
+          # count the current story
+          stories_dict = count_story(wd=wd, stories_dict=stories_dict)
       except Exception as e:
           time.sleep(rd.uniform(1.8,2.4))
           print("CoreSpriteRightChevron is not found, perhaps stories are left", e)
           break
 
     end = time.time() - start
-    print("Total watching time: " + str(end // 60) + " m " + str(round(end % 60, 2)) + " s ")
-    print("Number of stories viewed: " + str(count))
-    time.sleep(rd.uniform(1.8,2.4))
-
+    print("Total watching time: " + str(round(end // 60)) + " m " + str(round(end % 60)) + " s ")
+    print("Total number of stories:", count)
+    print("The number of stories per account:", stories_dict)
+    time.sleep(rd.uniform(2.5,3.5))
     wd.quit()
-
   except Exception as e:
     print(e)
     pass
-
 
 # Schedule method will start to count each time after function's finished, it will not count time for the function execution
 schedule.every(5).minutes.do(job, CHROMEDRIVER_PATH=CHROMEDRIVER_PATH, options=options, username=username, password=password)
